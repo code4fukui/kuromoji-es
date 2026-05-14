@@ -1,55 +1,90 @@
-kuromoji-es
-===========
+# kuromoji-es
 
-JavaScript ES module implementation of Japanese morphological analyzer.
-This is a pure JavaScript porting of [Kuromoji](https://www.atilika.com/ja/kuromoji/).
+[
+![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
+](https://opensource.org/licenses/Apache-2.0)
 
-You can see how kuromoji.js works in [demo site](https://takuyaa.github.io/kuromoji.js/demo/tokenize.html).
+> 日本語のREADMEはこちらです: [README.ja.md](README.ja.md)
 
+A Japanese morphological analyzer implemented as a pure JavaScript ES module. This is a modern port of the original [Kuromoji](https://www.atilika.com/ja/kuromoji/), designed for simplicity and compatibility with current web standards.
 
-Directory
----------
+## Features
 
-Directory tree is as follows:
+-   **Pure JavaScript:** Runs in any modern JavaScript environment without native dependencies.
+-   **ES Module:** Easily importable into modern projects using `import`.
+-   **Cross-Platform:** Works seamlessly in Deno and modern web browsers.
+-   **Optimized:** Uses compressed dictionary files (gzip) for faster network loading.
 
-    dict/         -- Dictionaries for tokenizer (gzipped)
-    example/      -- Examples to use in Deno and Browsers
-    src/          -- JavaScript source
-    test/         -- Unit test (todo: remake for ES module version)
+## Usage
 
+Import `kuromoji-es` and use the async `createTokenizer` function to get a tokenizer instance. The dictionary is loaded from a remote CDN by default.
 
-Usage
------
-
-```
+```js
 import { kuromoji } from "https://code4fukui.github.io/kuromoji-es/kuromoji.js";
 
+// Asynchronously load the dictionary and create a tokenizer
 const tokenizer = await kuromoji.createTokenizer();
-const path = tokenizer.tokenize("すもももももももものうち");
-console.log(path);
+
+// Tokenize a sentence
+const tokens = tokenizer.tokenize("すもももももももものうち");
+
+console.log(tokens);
 ```
 
-API
----
+## API Reference
 
-The function tokenize() returns an JSON array like this:
+### `kuromoji.createTokenizer()`
 
-    [ {
-        word_id: 509800,          // 辞書内での単語ID
-        word_type: 'KNOWN',       // 単語タイプ(辞書に登録されている単語ならKNOWN, 未知語ならUNKNOWN)
-        word_position: 1,         // 単語の開始位置
-        surface_form: '黒文字',    // 表層形
-        pos: '名詞',               // 品詞
-        pos_detail_1: '一般',      // 品詞細分類1
-        pos_detail_2: '*',        // 品詞細分類2
-        pos_detail_3: '*',        // 品詞細分類3
-        conjugated_type: '*',     // 活用型
-        conjugated_form: '*',     // 活用形
-        basic_form: '黒文字',      // 基本形
-        reading: 'クロモジ',       // 読み
-        pronunciation: 'クロモジ'  // 発音
-      } ]
+Asynchronously loads the dictionary files and returns a `Promise` that resolves with a tokenizer instance.
 
-(This is defined in src/util/IpadicFormatter.js)
+### `tokenizer.tokenize(text)`
 
-See also [JSDoc page](https://takuyaa.github.io/kuromoji.js/jsdoc/) in details.
+Takes a string of Japanese text and returns an array of token objects, each containing detailed morphological information.
+
+### Token Object Structure
+
+The `tokenize()` method returns an array of objects with the following structure:
+
+```json
+[
+  {
+    "word_id": 509800,
+    "word_type": "KNOWN",
+    "word_position": 1,
+    "surface_form": "黒文字",
+    "pos": "名詞",
+    "pos_detail_1": "一般",
+    "pos_detail_2": "*",
+    "pos_detail_3": "*",
+    "conjugated_type": "*",
+    "conjugated_form": "*",
+    "basic_form": "黒文字",
+    "reading": "クロモジ",
+    "pronunciation": "クロモジ"
+  }
+]
+```
+
+**Fields:**
+
+-   `word_id`: ID of the word in the dictionary.
+-   `word_type`: Type of word (`KNOWN` if in dictionary, `UNKNOWN` otherwise).
+-   `word_position`: 1-based starting position of the word in the input text.
+-   `surface_form`: The word as it appears in the text.
+-   `pos`: Part of speech (e.g., `名詞` for noun).
+-   `pos_detail_1`, `pos_detail_2`, `pos_detail_3`: Sub-classifications for the part of speech.
+-   `conjugated_type`: Conjugation type (e.g., `五段・ラ行` for Godan verb).
+-   `conjugated_form`: Conjugation form (e.g., `基本形` for basic form).
+-   `basic_form`: The base form (lemma) of the word.
+-   `reading`: The reading of the word in Katakana.
+-   `pronunciation`: The pronunciation of the word in Katakana.
+
+For more details on the dictionary fields, please refer to the original [kuromoji.js JSDoc page](https://takuyaa.github.io/kuromoji.js/jsdoc/).
+
+## Acknowledgements
+
+This project is a port of [kuromoji.js](https://github.com/takuyaa/kuromoji.js/) by Takuya Asano, which is a JavaScript port of the original [Kuromoji](https://www.atilika.com/ja/kuromoji/) project by Atilika Inc.
+
+## License
+
+This library is licensed under the Apache License, Version 2.0.
